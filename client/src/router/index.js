@@ -9,7 +9,7 @@ Vue.use(VueRouter);
 const routes = [
   {
     path: '/',
-    name: 'ome',
+    name: 'home',
     component: Home,
     meta: { title: 'enamel' }
   },
