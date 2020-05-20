@@ -1,15 +1,32 @@
 const { GraphQLScalarType } = require('graphql')
+const JWT_SECRET = process.env.JWT_SECRET
 
 const moment = require('moment')
 const bcrypt = require('bcrypt')
 const jwt = require('jsonwebtoken')
+const nodeMailer = require('nodemailer')
 
 const { User, Team } = require('./models')
-const JWT_SECRET = process.env.JWT_SECRET
+const { welcomeEmail } = require('./emails')
+
 const avatarColors = [
   "D81B60","F06292","F48FB1","FFB74D","FF9800","F57C00","00897B","4DB6AC","80CBC4",
   "80DEEA","4DD0E1","00ACC1","9FA8DA","7986CB","3949AB","8E24AA","BA68C8","CE93D8"
 ]
+
+const transporter = nodeMailer.createTransport({
+  // host: 'smtp.gmail.com',
+  // port: 465,
+  // secure: true,
+  service: 'gmail',
+  auth: {
+    user: process.env.FROM_EMAIL,
+    pass: process.env.GMAIL_PASSWORD
+  },
+  tls: {
+    rejectUnauthorized: false
+  }
+})
 
 function randomChoice(arr) {
   return arr[Math.floor(arr.length * Math.random())]
@@ -32,6 +49,7 @@ const resolvers = {
         role: 'Owner',
         status: 'Pending'
       })
+      transporter.sendMail(welcomeEmail(email, user))
       return user
     },
     async signup (_, {id, firstname, lastname, password}) {
