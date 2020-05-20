@@ -1,7 +1,9 @@
 const { GraphQLScalarType } = require('graphql')
+
 const moment = require('moment')
 const bcrypt = require('bcrypt')
 const jwt = require('jsonwebtoken')
+
 const { User, Team } = require('./models')
 const JWT_SECRET = process.env.JWT_SECRET
 const avatarColors = [
@@ -59,7 +61,17 @@ const resolvers = {
       return {token, user}
     },
     async login (_, {email, password}) {
-    }
+      const user = await User.findOne({email})
+      if (!user) {
+        throw new Error('No user with that email')
+      }
+      const valid = await bcrypt.compare(password, user.password)
+      if (!valid) {
+        throw new Error('Incorrect password')
+      }
+      const token = jwt.sign({id: user.id, email}, JWT_SECRET)
+      return {token, user}
+    },
   },
   Date: new GraphQLScalarType({
     name: 'Date',
