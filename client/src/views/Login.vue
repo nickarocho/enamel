@@ -2,14 +2,13 @@
   <el-container>
     <el-header>
     </el-header>
-<el-main>
+    <el-main>
       <div class="container-center">
         <h2>Log in</h2>
-        
         <div v-if="error" class="error">
           {{ error }}
         </div>
-<el-form ref="form" :model="form">
+        <el-form ref="form" :model="form">
           <el-form-item>
             <label>Email</label>
             <el-input v-model="form.email" placeholder="Email"></el-input>
@@ -20,16 +19,18 @@
             <el-button type="primary" @click.once="login">Log in</el-button>
           </el-form-item>
         </el-form>
-<div>
+        <div>
           <span>Don't have an account?</span>
           <router-link :to="{name: 'home'}" class="link">Create an account</router-link>
         </div>
       </div>
-</el-main>
+    </el-main>
   </el-container>
 </template>
+
 <script>
 import { Login } from '../constants/query.gql'
+
 export default {
   data() {
     return {
@@ -42,6 +43,8 @@ export default {
   },
   methods: {
     async login() {
+      // clear auth cache in case logged in to another account
+      this.$apollo.provider.clients.defaultClient.cache.reset()
       const { email, password } = this.form
       if (email && password) {
         this.$apollo.mutate({
@@ -52,8 +55,8 @@ export default {
           const id = login.user.id
           const token = login.token
           this.saveUserData(id, token)
-          // this.$router.push({name: 'workspace'})
-          console.log('success')
+          // redirect user to main workspace
+          this.$router.push({name: 'workspace'})
         }).catch((error) => {
           this.error = 'Invalid email or password'
           console.log(error)
@@ -68,6 +71,7 @@ export default {
   }
 }
 </script>
+
 <style scoped>
 .el-button {
   width: 100%;

@@ -7,6 +7,7 @@ const jwt = require('jsonwebtoken')
 const nodeMailer = require('nodemailer')
 
 const { User, Team } = require('./models')
+const { getUserId } = require('./utils')
 const { welcomeEmail } = require('./emails')
 
 const avatarColors = [
@@ -34,9 +35,11 @@ function randomChoice(arr) {
 
 const resolvers = {
   Query: {
-    test (_, args, context) {
-      return 'Hello World!!'
-    }
+    async getTeam (_, args, context) {
+      const userId = getUserId(context)
+      const user = await User.findById(userId)
+      return await Team.findById(user.team)
+    },
   },
   Mutation: {
     async captureEmail (_, {email}) {

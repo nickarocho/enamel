@@ -40,6 +40,8 @@ export default {
   },
   methods: {
     async signup() {
+      // clear auth cache in case logged in to another account
+      this.$apollo.provider.clients.defaultClient.cache.reset()
       const { firstname, lastname, password } = this.form
       if (!(firstname && lastname && password)) {
         this.error = 'Please complete the form'
@@ -57,7 +59,8 @@ export default {
         const id = signup.user.id
         const token = signup.token
         this.saveUserData(id, token)
-        // this.$router.push({name: 'workspace'})
+        // redirect user to main workspace
+        this.$router.push({name: 'workspace'})
         console.log('success!') // For now just print
       }).catch((error) => {
         this.error = 'Something went wrong'
