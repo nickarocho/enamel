@@ -1,12 +1,10 @@
 scalar Date
+scalar JSON
 
 type Query {
   getTeam: Team
-}
-
-type Team {
-  id: String
-  name: String
+  getFolders(parent: String): [Folder]
+  getFolder(id: String!): Folder
 }
 
 type Mutation {
@@ -29,7 +27,20 @@ type User {
   createdAt: Date
 }
 
+type Folder {
+  id: String
+  name: String
+  parent: String
+  description: String
+  shareWith: [JSON]
+}
+
 type AuthPayload {
   token: String!
   user: User!
+}
+
+type Team {
+  id: String
+  name: String
 }

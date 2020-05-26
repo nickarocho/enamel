@@ -5,8 +5,10 @@ const moment = require('moment')
 const bcrypt = require('bcrypt')
 const jwt = require('jsonwebtoken')
 const nodeMailer = require('nodemailer')
+const mongoose = require('mongoose')
+const ObjectId = mongoose.Types.ObjectId
 
-const { User, Team } = require('./models')
+const { User, Team, Folder, Group } = require('./models')
 const { getUserId } = require('./utils')
 const { welcomeEmail } = require('./emails')
 
@@ -40,6 +42,25 @@ const resolvers = {
       const user = await User.findById(userId)
       return await Team.findById(user.team)
     },
+    async getFolders (_, {parent}, context) {
+      const userId = getUserId(context)
+      if (parent) {
+        return await Folder.find({parent})
+      } else {
+        const user = await User.findById(userId)
+        const groups = await Group.find({users: ObjectId(userId)}, '_id')
+        const ids = groups.map(o => o._id).concat(
+          ['External User', 'Collaborator'].includes(user.role)
+          ? [ObjectId(userId)]
+          : [ObjectId(userId), user.team]
+        )
+        return await Folder.find({ 'shareWith.item': ids }).populate('shareWith')
+      }
+    },
+    async getFolder (_, {id}, context) {
+      const userId = getUserId(context)
+      return await Folder.findById(id).populate('shareWith')
+    },
   },
   Mutation: {
     async captureEmail (_, {email}) {
@@ -52,7 +73,9 @@ const resolvers = {
         role: 'Owner',
         status: 'Pending'
       })
-      transporter.sendMail(welcomeEmail(email, user))
+      // Uncomment this to send the email
+      // transporter.sendMail(welcomeEmail(email, user))
+
       return user
     },
     async signup (_, {id, firstname, lastname, password}) {
