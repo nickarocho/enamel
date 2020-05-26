@@ -31,6 +31,10 @@ mutation CreateFolder($parent: String, $name: String!) {
   }
 }
 
+mutation UpdateFolder($id: String!, $input: FolderInput) {
+  updateFolder(id: $id, input: $input) { ...FolderFields }
+}
+
 query GetTeam {
   getTeam {
     id

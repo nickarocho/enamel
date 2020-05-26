@@ -46,3 +46,15 @@ type Team {
   id: String
   name: String
 }
+
+input FolderInput {
+  name: String
+  parent: String
+  description: String
+  shareWith: [ShareInput]
+}
+
+input ShareInput {
+  kind: String
+  item: String
+}
