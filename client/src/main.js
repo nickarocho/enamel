@@ -44,7 +44,8 @@ const authMiddleware = new ApolloLink((operation, forward) => {
 const client = new ApolloClient({
   link: ApolloLink.from([
     errorLink,
-    httpLink
+    authMiddleware,
+    httpLink,
   ]),
   cache,
   connectToDevTools: true,
