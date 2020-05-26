@@ -13,9 +13,11 @@ import App from './App.vue'
 import router from './router'
 import store from './store'
 import './assets/css/style.scss'
+import PlusButton from '@/components/icons/PlusButton.vue'
 
 Vue.use(ElementUI)
 Vue.config.productionTip = false
+Vue.component('plus-button', PlusButton)
 
 const uri = `${process.env.VUE_APP_URI}/graphql`
 const httpLink = new HttpLink({uri})

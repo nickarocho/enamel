@@ -25,6 +25,12 @@ mutation Login($email: String!, $password: String!) {
   }
 }
 
+mutation CreateFolder($parent: String, $name: String!) {
+  createFolder(parent: $parent, name: $name) {
+    ...FolderFields
+  }
+}
+
 query GetTeam {
   getTeam {
     id
