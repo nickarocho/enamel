@@ -13,7 +13,7 @@
         <span class="folder no-select-color">{{ model.name }}</span>
         <div class="dropdown-content left" v-show="activeWidget === `folder${model.id}`">
           <div @click="openModal">Add Folder</div>
-          <!-- <div @click="deleteFolder">Delete</div> -->
+          <div @click="deleteFolder">Delete</div>
         </div>
       </div>
     </div>
@@ -34,7 +34,7 @@
 import { mapState } from 'vuex'
 import FolderTree from './FolderTree'
 import FolderForm from './FolderForm'
-import { GetFolders } from '../constants/query.gql'
+import { GetFolders, DeleteFolder } from '../constants/query.gql'
 
 export default {
   name: 'tree',
@@ -89,6 +89,33 @@ export default {
     openArrow() {
       this.open = true
       this.$emit('open')
+    },
+    deleteFolder() {
+      const { id, parent } = this.model
+      this.$apollo.mutate({
+        mutation: DeleteFolder,
+        variables: {id},
+        update: (store) => {
+          const variables = this.team ? {} : {parent}
+          const data = store.readQuery({
+            query: GetFolders,
+            variables
+          })
+          data.getFolders.splice(data.getFolders.findIndex(o => o.id === id), 1)
+          store.writeQuery({
+            query: GetFolders,
+            variables,
+            data
+          })
+        }
+      }).then(() => {
+        this.$router.replace({
+          name: "folder",
+          params: {id: this.team || parent},
+        })
+      }).catch((error) => {
+        console.log(error)
+      })
     },
   },
   watch: {

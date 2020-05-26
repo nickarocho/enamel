@@ -35,6 +35,14 @@ function randomChoice(arr) {
   return arr[Math.floor(arr.length * Math.random())]
 }
 
+async function deleteSubfolders(id) {
+  const folders = await Folder.find({parent: id})
+  for (const folder of folders) {
+   await deleteSubfolders(folder.id)
+   await Folder.deleteOne({_id: folder.id})
+  } 
+}
+
 const resolvers = {
   Query: {
     async getTeam (_, args, context) {
@@ -135,6 +143,12 @@ const resolvers = {
         { $set: input },
         { new: true }
       ).populate('shareWith')
+    },
+    async deleteFolder(_, {id}, context) {
+      const userId = getUserId(context)
+      await Folder.deleteOne({_id: id})
+      deleteSubfolders(id)
+      return true
     },
   },
   Date: new GraphQLScalarType({
