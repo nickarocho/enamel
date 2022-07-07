@@ -17,7 +17,7 @@
     "element-ui": "^2.13.2",
     "graphql": "^15.0.0",
     "graphql-tag": "^2.10.3",
-    "moment": "^2.25.3",
+    "moment": "^2.29.4",
     "vue": "^2.6.11",
     "vue-apollo": "^3.0.3",
     "vue-router": "^3.1.6",
